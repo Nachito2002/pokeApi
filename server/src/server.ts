@@ -1,11 +1,23 @@
-import express, { Application, Request, Response } from "express";
+import { config } from "dotenv";
+config();
+
 import path from "path";
+
+import express, { Application } from "express";
+import morgan from "morgan";
+import bodyParser from "body-parser";
+
+import Pokemon from "./routes/pokemons";
+
 const app: Application = express();
 
+app.set("PORT", process.env.PORT);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", (req: Request, res: Response) => {
-	res.send("Hello");
-});
+app.use("/api/pokemon", Pokemon);
 
-app.listen(3000, () => console.log("Server running"));
+app.listen(app.get("PORT"), () => console.log(`Server on port: ${app.get("PORT")}`));
